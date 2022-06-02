@@ -1,7 +1,6 @@
 package com.example.posturev2
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -9,9 +8,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import com.example.posturev2.notif.PostureNotificationManager
 import com.example.posturev2.ui.theme.PostureV2Theme
 
 class MainActivity : ComponentActivity() {
@@ -30,13 +29,17 @@ class MainActivity : ComponentActivity() {
                     ) {
                         ButtonExample(
                             onClick = {
-                                Toast.makeText(this@MainActivity, "Notif", Toast.LENGTH_SHORT).show()
+                                sendNotif()
                             }
                         )
                     }
                 }
             }
         }
+    }
+
+    private fun sendNotif() {
+        PostureNotificationManager.getInstance(application).sendNotification()
     }
 }
 
