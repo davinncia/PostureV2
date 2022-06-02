@@ -3,6 +3,6 @@ package com.example.posturev2.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val BlueLight = Color(0xFFC1DEDD)
+val BlueDarker = Color(0xFF90DDDA)
+val PinkLight = Color(0xFFDEC1D0)
