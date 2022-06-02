@@ -7,17 +7,17 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.posturev2.R
 
-class PostureNotificationManager private constructor(private val app: Application) {
+class PostureNotifManager private constructor(private val appContext: Context) {
 
     fun sendNotification() {
-        createNotificationChannel(app)
+        createNotificationChannel(appContext)
 
         val notificationManager = ContextCompat.getSystemService(
-            app,
+            appContext,
             NotificationManager::class.java
         ) as NotificationManager
 
-        prepareNotification(app, notificationManager)
+        prepareNotification(appContext, notificationManager)
     }
 
     private fun prepareNotification(
@@ -124,12 +124,12 @@ class PostureNotificationManager private constructor(private val app: Applicatio
         private const val NEG_RC = 1
         private const val NEU_RC = 2
 
-        private var INSTANCE: PostureNotificationManager? = null
-        fun getInstance(application: Application): PostureNotificationManager {
+        private var INSTANCE: PostureNotifManager? = null
+        fun getInstance(appContext: Context): PostureNotifManager {
             if (INSTANCE == null) {
-                synchronized(PostureNotificationManager) {
+                synchronized(PostureNotifManager) {
                     if (INSTANCE == null) {
-                        INSTANCE = PostureNotificationManager(application)
+                        INSTANCE = PostureNotifManager(appContext)
                     }
                 }
             }

@@ -10,9 +10,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.example.posturev2.notif.PostureNotificationManager
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import com.example.posturev2.notif.NotifWorker
+import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.ui.theme.PostureV2Theme
+import java.util.concurrent.TimeUnit
 
+//todo icon <v24
+//todo Hilt
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +47,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendNotif() {
-        PostureNotificationManager.getInstance(application).sendNotification()
+        val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(15, TimeUnit.MINUTES)
+            .setInitialDelay(1, TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(applicationContext).enqueue(notifWorkRequest)
     }
 }
 
