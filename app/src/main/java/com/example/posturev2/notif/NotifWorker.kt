@@ -13,4 +13,7 @@ class NotifWorker(appContext: Context, workerParams: WorkerParameters) : Worker(
         return Result.success()
     }
 
+    companion object {
+        const val TAG = "Notification_Worker_Tag"
+    }
 }

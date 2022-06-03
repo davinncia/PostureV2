@@ -56,6 +56,7 @@ class PostureNotifManager private constructor(private val appContext: Context) {
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             //.setSound(Uri.parse("android.resource://"+appContext.packageName +"/"+R.raw.sound))
             //.setVibrate(longArrayOf(0, 100, 100, 100, 200, 200))
+            .setVibrate(longArrayOf(200, 200))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Are you straight?")
             //.setContentIntent(contentPendingIntent)

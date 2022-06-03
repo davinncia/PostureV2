@@ -1,19 +1,25 @@
 package com.example.posturev2
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
+import androidx.work.await
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.ui.theme.PostureV2Theme
@@ -35,28 +41,63 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        ButtonExample(
-                            onClick = {
-                                sendNotif()
-                            }
-                        )
+                        NotifSwitch(getNotifWorkerState()) { checked ->
+                            if (checked) scheduleNotif()
+                            else cancelNotif()
+                        }
+                        NotifButton() {
+                            PostureNotifManager.getInstance(applicationContext).sendNotification()
+                        }
                     }
                 }
             }
         }
+
+        Toast.makeText(this, "${getNotifWorkerState()}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun sendNotif() {
+    private fun scheduleNotif() {
         val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(15, TimeUnit.MINUTES)
             .setInitialDelay(1, TimeUnit.MINUTES)
+            .addTag(NotifWorker.TAG)
             .build()
         WorkManager.getInstance(applicationContext).enqueue(notifWorkRequest)
+    }
+
+    private fun cancelNotif() {
+        WorkManager.getInstance(applicationContext).cancelAllWorkByTag(NotifWorker.TAG)
+    }
+
+    private fun getNotifWorkerState(): Boolean {
+        val info = WorkManager.getInstance(applicationContext).getWorkInfosByTag(NotifWorker.TAG)
+
+        return !(info.isCancelled || info.isDone || info.get().isEmpty())
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ButtonExample(onClick: () -> Unit = {}) {
+fun NotifSwitch(checked: Boolean = false, onSwitch: (Boolean) -> Unit = {}) {
+    val checkedState = remember { mutableStateOf(checked) }
+    Switch(
+        checked = checkedState.value,
+        onCheckedChange = {
+            onSwitch.invoke(it)
+            checkedState.value = it
+        },
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = Color.DarkGray,
+            uncheckedThumbColor = Color.DarkGray,
+            checkedTrackColor = Color.Blue,
+            uncheckedTrackColor = Color.Gray,
+        ),
+        modifier = Modifier.padding(Dp(16f))
+    )
+}
+
+
+@Composable
+fun NotifButton(onClick: () -> Unit = {}) {
     Button(
         onClick = onClick,
         Modifier.padding(Dp(16f))
