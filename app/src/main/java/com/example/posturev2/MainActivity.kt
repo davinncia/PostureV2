@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,11 +24,17 @@ import androidx.work.await
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.ui.theme.PostureV2Theme
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 //todo icon <v24
-//todo Hilt
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -46,7 +53,7 @@ class MainActivity : ComponentActivity() {
                             else cancelNotif()
                         }
                         NotifButton() {
-                            PostureNotifManager.getInstance(applicationContext).sendNotification()
+                            viewModel.sendNotif()
                         }
                     }
                 }

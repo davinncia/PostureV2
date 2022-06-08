@@ -6,8 +6,12 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.posturev2.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PostureNotifManager private constructor(private val appContext: Context) {
+@Singleton
+class PostureNotifManager @Inject constructor(@ApplicationContext val appContext: Context) {
 
     fun sendNotification() {
         createNotificationChannel(appContext)
