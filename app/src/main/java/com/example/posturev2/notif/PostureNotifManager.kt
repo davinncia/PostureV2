@@ -2,9 +2,11 @@ package com.example.posturev2.notif
 
 import android.app.*
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.example.posturev2.MainActivity
 import com.example.posturev2.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -12,6 +14,8 @@ import javax.inject.Singleton
 
 @Singleton
 class PostureNotifManager @Inject constructor(@ApplicationContext val appContext: Context) {
+
+    private val vibrationPattern = longArrayOf(200, 200)
 
     fun sendNotification() {
         createNotificationChannel(appContext)
@@ -30,15 +34,17 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
     ) {
 
         // On click intent
-        /*
-        val contentIntent = Intent(applicationContext, MainActivity::class.java)
+        val clickIntent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
         val contentPendingIntent = PendingIntent.getActivity(
             applicationContext,
             NOTIFICATION_ID,
-            contentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            clickIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
 
+/*
         // Broadcast intent (actions)
         fun getBroadcastIntent(postureResponse: Int): Intent =
             Intent(applicationContext, NotificationReceiver::class.java).apply {
@@ -54,37 +60,37 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
                 PendingIntent.FLAG_ONE_SHOT
             )
 
-         */
+ */
+
 
         // Builder
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             //.setSound(Uri.parse("android.resource://"+appContext.packageName +"/"+R.raw.sound))
             //.setVibrate(longArrayOf(0, 100, 100, 100, 200, 200))
-            .setVibrate(longArrayOf(200, 200))
+            .setVibrate(vibrationPattern)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Are you straight?")
-            //.setContentIntent(contentPendingIntent)
+            .setContentTitle(appContext.getString(R.string.notif_title_standing_straight))
+            .setContentIntent(contentPendingIntent)
             .setAutoCancel(true)
-                /*
             .addAction(
-                R.drawable.ic_chart,
-                "YES",
-                getBroadcastPendingIntent(PostureLog.POSITIVE, POS_RC)
+                R.drawable.ic_check,
+                appContext.getString(R.string.notif_action_positive),
+                //getBroadcastPendingIntent(PostureLog.POSITIVE, POS_RC)
+                contentPendingIntent
             )
             .addAction(
-                R.drawable.ic_person,
-                "NO",
-                getBroadcastPendingIntent(PostureLog.NEGATIVE, NEG_RC)
+                R.drawable.ic_check,
+                appContext.getString(R.string.notif_action_negative),
+                //getBroadcastPendingIntent(PostureLog.NEGATIVE, NEG_RC)
+                contentPendingIntent
             )
             .addAction(
-                R.drawable.ic_person,
-                "Neutral",
-                getBroadcastPendingIntent(PostureLog.NEUTRAL, NEU_RC)
+                R.drawable.ic_check,
+                "?",
+                //getBroadcastPendingIntent(PostureLog.NEUTRAL, NEU_RC)
+                contentPendingIntent
             )
-
-                 */
-            //.setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setPriority(NotificationCompat.PRIORITY_MAX) // TODO remove
+            .setPriority(NotificationCompat.PRIORITY_MAX)
 
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
@@ -112,7 +118,7 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
             channel.description = notifDescription
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             //channel.setSound(sound, soundAttributes)
-            //channel.vibrationPattern = longArrayOf(0, 100, 100, 100, 200, 200)
+            channel.vibrationPattern = vibrationPattern
             // Register the channel with the system; you can't change the importance or other notification behaviors after this
             val notificationManager: NotificationManager = context.getSystemService(
                 NotificationManager::class.java
