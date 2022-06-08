@@ -48,37 +48,21 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        NotifSwitch(getNotifWorkerState()) { checked ->
-                            if (checked) scheduleNotif()
-                            else cancelNotif()
+                        NotifSwitch(viewModel.getNotifWorkerState()) { checked ->
+                            if (checked) viewModel.scheduleNotif()
+                            else viewModel.cancelNotif()
                         }
                         NotifButton() {
-                            viewModel.sendNotif()
+                            viewModel.scheduleOneTimeNotif()
                         }
                     }
                 }
             }
         }
 
-        Toast.makeText(this, "${getNotifWorkerState()}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun scheduleNotif() {
-        val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(15, TimeUnit.MINUTES)
-            .setInitialDelay(1, TimeUnit.MINUTES)
-            .addTag(NotifWorker.TAG)
-            .build()
-        WorkManager.getInstance(applicationContext).enqueue(notifWorkRequest)
-    }
 
-    private fun cancelNotif() {
-        WorkManager.getInstance(applicationContext).cancelAllWorkByTag(NotifWorker.TAG)
-    }
-
-    private fun getNotifWorkerState(): Boolean {
-        val info = WorkManager.getInstance(applicationContext).getWorkInfosByTag(NotifWorker.TAG)
-        return !(info.isCancelled || info.isDone || info.get().isEmpty())
-    }
 }
 
 @Preview(showBackground = true)
