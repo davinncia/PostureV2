@@ -77,7 +77,6 @@ class MainActivity : ComponentActivity() {
 
     private fun getNotifWorkerState(): Boolean {
         val info = WorkManager.getInstance(applicationContext).getWorkInfosByTag(NotifWorker.TAG)
-
         return !(info.isCancelled || info.isDone || info.get().isEmpty())
     }
 }
