@@ -1,6 +1,7 @@
 package com.example.posturev2
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -8,6 +9,7 @@ import androidx.work.WorkRequest
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.notif.PostureNotifManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -15,10 +17,19 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val notifManager: PostureNotifManager,
     private val workManager: WorkManager,
+    private val dataStoreRepo: DataStoreRepository
 ) : ViewModel() {
+
+    val interval = dataStoreRepo.notifInterval
 
     private fun sendNotif() {
         notifManager.sendNotification()
+    }
+
+    fun saveNotifInterval(min: Int = 10) {
+        viewModelScope.launch {
+            dataStoreRepo.setNotifInterval(min)
+        }
     }
 
     //-------------------------------- W O R K    M A N A G E R ----------------------------------//

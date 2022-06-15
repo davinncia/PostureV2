@@ -17,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -26,10 +29,13 @@ import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.ui.theme.PostureV2Theme
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 //todo icon <v24
+//todo save notif interval in data store, update on new input
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -53,12 +59,24 @@ class MainActivity : ComponentActivity() {
                             else viewModel.cancelNotif()
                         }
                         NotifButton() {
-                            viewModel.scheduleOneTimeNotif()
+                            //viewModel.scheduleOneTimeNotif()
+                            viewModel.saveNotifInterval()
                         }
                     }
                 }
             }
         }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                launch {
+                    viewModel.interval.collect {
+                        Toast.makeText(this@MainActivity, "$it", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
 
     }
 
