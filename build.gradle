@@ -4,6 +4,7 @@ buildscript {
         work_version = '2.7.1'
         hilt_version = '2.38.1'
         lifecycle_version = '2.4.1'
+        roomVersion = '2.4.2'
     }
 
     dependencies {

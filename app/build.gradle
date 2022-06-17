@@ -67,6 +67,10 @@ dependencies {
     // Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
+    // Room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion" // coroutines
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.compose.ui:ui:$compose_version"
