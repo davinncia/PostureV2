@@ -3,12 +3,11 @@ package com.example.posturev2.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
-import androidx.datastore.migrations.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.example.posturev2.DataStoreRepository
+import com.example.posturev2.repo.DataStoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

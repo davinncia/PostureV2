@@ -5,18 +5,23 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -45,45 +50,48 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PostureV2Theme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background,
+                Scaffold(
+                    topBar = { MainTabBar() },
                 ) {
-                    Column(
+                    // A surface container using the 'background' color from the theme
+                    Surface(
                         modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        color = MaterialTheme.colors.background,
                     ) {
-                        NotifSwitch(viewModel.getNotifWorkerState()) { checked ->
-                            if (checked) viewModel.scheduleNotif()
-                            else viewModel.cancelNotif()
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            NotifSwitch(viewModel.getNotifWorkerState()) { checked ->
+                                if (checked) viewModel.scheduleNotif()
+                                else viewModel.cancelNotif()
+                            }
+                            NotifButton() {
+                                //viewModel.scheduleOneTimeNotif()
+                                viewModel.saveNotifInterval()
+                            }
                         }
-                        NotifButton() {
-                            //viewModel.scheduleOneTimeNotif()
-                            viewModel.saveNotifInterval()
+                    }
+
+                }
+            }
+
+            lifecycleScope.launch {
+                lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    launch {
+                        viewModel.interval.collect {
+                            Toast.makeText(this@MainActivity, "$it", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
+            
         }
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                launch {
-                    viewModel.interval.collect {
-                        Toast.makeText(this@MainActivity, "$it", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-
-
     }
 
 
 }
 
-@Preview(showBackground = true)
 @Composable
 fun NotifSwitch(checked: Boolean = false, onSwitch: (Boolean) -> Unit = {}) {
     val checkedState = remember { mutableStateOf(checked) }
@@ -112,4 +120,20 @@ fun NotifButton(onClick: () -> Unit = {}) {
     ) {
         Text("Send notification")
     }
+}
+
+@Preview
+@Composable
+fun MainTabBar() {
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.app_title)) },
+        actions = {
+            IconButton(
+                onClick = { },
+                modifier = Modifier.padding(8.dp)
+           ) {
+                Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
+            }
+        }
+    )
 }

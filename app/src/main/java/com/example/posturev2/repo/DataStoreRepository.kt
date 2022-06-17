@@ -1,4 +1,4 @@
-package com.example.posturev2
+package com.example.posturev2.repo
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.math.min
 
 class DataStoreRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>

@@ -3,4 +3,5 @@
     <string name="notif_title_standing_straight">Standing straight?</string>
     <string name="notif_action_positive">YES</string>
     <string name="notif_action_negative">NO</string>
+    <string name="app_title">Posture</string>
 </resources>
