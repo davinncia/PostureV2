@@ -67,8 +67,8 @@ class MainActivity : ComponentActivity() {
                                 else viewModel.cancelNotif()
                             }
                             NotifButton() {
-                                //viewModel.scheduleOneTimeNotif()
-                                viewModel.saveNotifInterval()
+                                viewModel.scheduleOneTimeNotif()
+                                //viewModel.saveNotifInterval()
                             }
                         }
                     }

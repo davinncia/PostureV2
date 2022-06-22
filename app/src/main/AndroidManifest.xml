@@ -29,6 +29,14 @@
             tools:node="remove">
         </provider>
 
+        <receiver
+            android:name=".notif.NotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

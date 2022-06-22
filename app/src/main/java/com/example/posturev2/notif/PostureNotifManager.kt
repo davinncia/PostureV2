@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.posturev2.MainActivity
 import com.example.posturev2.R
+import com.example.posturev2.database.Feedback
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,24 +45,20 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
             PendingIntent.FLAG_IMMUTABLE
         )
 
-/*
         // Broadcast intent (actions)
-        fun getBroadcastIntent(postureResponse: Int): Intent =
+        fun getBroadcastIntent(postureResponse: Boolean): Intent =
             Intent(applicationContext, NotificationReceiver::class.java).apply {
-                putExtra("response", postureResponse)
-                putExtra("id", NOTIFICATION_ID)
+                putExtra(EXTRA_FEEDBACK, postureResponse)
+                putExtra(ID_NOTIF, NOTIFICATION_ID)
             }
 
-        fun getBroadcastPendingIntent(postureResponse: Int, requestCode: Int) =
+        fun getBroadcastPendingIntent(postureResponse: Boolean, requestCode: Int) =
             PendingIntent.getBroadcast(
                 applicationContext,
                 requestCode,
                 getBroadcastIntent(postureResponse),
-                PendingIntent.FLAG_ONE_SHOT
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
             )
-
- */
-
 
         // Builder
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
@@ -75,20 +72,12 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
             .addAction(
                 R.drawable.ic_check,
                 appContext.getString(R.string.notif_action_positive),
-                //getBroadcastPendingIntent(PostureLog.POSITIVE, POS_RC)
-                contentPendingIntent
+                getBroadcastPendingIntent(true, POS_RC)
             )
             .addAction(
                 R.drawable.ic_check,
                 appContext.getString(R.string.notif_action_negative),
-                //getBroadcastPendingIntent(PostureLog.NEGATIVE, NEG_RC)
-                contentPendingIntent
-            )
-            .addAction(
-                R.drawable.ic_check,
-                "?",
-                //getBroadcastPendingIntent(PostureLog.NEUTRAL, NEU_RC)
-                contentPendingIntent
+                getBroadcastPendingIntent(false, NEG_RC)
             )
             .setPriority(NotificationCompat.PRIORITY_MAX)
 
@@ -100,7 +89,7 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
     private fun createNotificationChannel(context: Context) {
         //This should always be executed before sending notification
         // Create the NotificationChannel, but only on API 26+
-        val notifDescription = "Notification to ask about current posture"
+        val notifDescription = context.getString(R.string.notif_description)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Custom sound
             //Needs to be reinstalled to change notif sound ! Or change channel ID(?)
@@ -134,6 +123,8 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
         private const val POS_RC = 0
         private const val NEG_RC = 1
         private const val NEU_RC = 2
+        const val EXTRA_FEEDBACK = "feedback_response"
+        const val ID_NOTIF = "posture_id"
 
         private var INSTANCE: PostureNotifManager? = null
         fun getInstance(appContext: Context): PostureNotifManager {
