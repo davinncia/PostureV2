@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 //todo icon <v24
-//todo save notif interval in data store, update on new input
+//todo handle phone turned off
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
             lifecycleScope.launch {
                 lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                     launch {
-                        viewModel.interval.collect {
+                        viewModel.score.collect {
                             Toast.makeText(this@MainActivity, "$it", Toast.LENGTH_SHORT).show()
                         }
                     }

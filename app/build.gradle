@@ -54,6 +54,8 @@ dependencies {
 
     // Hilt Dagger
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     // WorkManager & Hilt

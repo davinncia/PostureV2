@@ -9,6 +9,7 @@ import androidx.work.WorkRequest
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.repo.DataStoreRepository
+import com.example.posturev2.repo.FeedbackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -22,6 +23,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val interval = dataStoreRepo.notifInterval
+    val score = dataStoreRepo.weeklyScore
 
     private fun sendNotif() {
         notifManager.sendNotification()
