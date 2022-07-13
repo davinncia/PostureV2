@@ -1,5 +1,6 @@
 package com.example.posturev2
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -29,6 +30,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.await
+import com.example.posturev2.admin.AdminActivity
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.ui.theme.PostureV2Theme
@@ -51,7 +53,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             PostureV2Theme {
                 Scaffold(
-                    topBar = { MainTabBar() },
+                    topBar = { MainTabBar(
+                        adminClick = {
+                            startActivity(Intent(this, AdminActivity::class.java))
+                        }
+                    ) },
                 ) {
                     // A surface container using the 'background' color from the theme
                     Surface(
@@ -124,12 +130,12 @@ fun NotifButton(onClick: () -> Unit = {}) {
 
 @Preview
 @Composable
-fun MainTabBar() {
+fun MainTabBar(adminClick: () -> Unit = {}) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_title)) },
         actions = {
             IconButton(
-                onClick = { },
+                onClick = { adminClick.invoke() },
                 modifier = Modifier.padding(8.dp)
            ) {
                 Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
