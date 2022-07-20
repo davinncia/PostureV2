@@ -6,23 +6,27 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.materialIcon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.android.style.LetterSpacingSpanEm
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -65,7 +69,7 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colors.background,
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             NotifSwitch(viewModel.getNotifWorkerState()) { checked ->
@@ -77,6 +81,8 @@ class MainActivity : ComponentActivity() {
                                 //viewModel.saveNotifInterval()
                             }
                         }
+                        Score(viewModel.score.collectAsState(initial = ""))
+                        IntervalTime(intervalStr = viewModel.interval.collectAsState(initial = ""))
                     }
 
                 }
@@ -96,6 +102,29 @@ class MainActivity : ComponentActivity() {
     }
 
 
+}
+
+@Composable
+private fun Score(scoreStr: State<String>) {
+    Box(modifier = Modifier.background(color = Color.Transparent)) {
+        Text(
+            modifier = Modifier.align(Alignment.Center),
+            text = scoreStr.value,
+            style = TextStyle(fontSize = 50.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+        )
+    }
+}
+
+@Composable
+private fun IntervalTime(intervalStr: State<String>) {
+    Box(modifier = Modifier.background(color = Color.Transparent)) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(24.dp),
+            text = intervalStr.value
+        )
+    }
 }
 
 @Composable
@@ -133,10 +162,11 @@ fun NotifButton(onClick: () -> Unit = {}) {
 fun MainTabBar(adminClick: () -> Unit = {}) {
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_title)) },
+        elevation = 0.dp,
         actions = {
             IconButton(
                 onClick = { adminClick.invoke() },
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(12.dp)
            ) {
                 Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
             }

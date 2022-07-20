@@ -11,6 +11,7 @@ import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.repo.DataStoreRepository
 import com.example.posturev2.repo.FeedbackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -22,8 +23,12 @@ class MainViewModel @Inject constructor(
     private val dataStoreRepo: DataStoreRepository
 ) : ViewModel() {
 
-    val interval = dataStoreRepo.notifInterval
-    val score = dataStoreRepo.weeklyScore
+    val interval = dataStoreRepo.notifInterval.map {
+        "Reminder every $it min"
+    }
+    val score = dataStoreRepo.weeklyScore.map {
+        "$it %"
+    }
 
     private fun sendNotif() {
         notifManager.sendNotification()
