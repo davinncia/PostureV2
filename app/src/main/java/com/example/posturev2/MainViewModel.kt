@@ -11,6 +11,7 @@ import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.repo.DataStoreRepository
 import com.example.posturev2.repo.FeedbackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -30,10 +31,6 @@ class MainViewModel @Inject constructor(
         "$it %"
     }
 
-    private fun sendNotif() {
-        notifManager.sendNotification()
-    }
-
     fun saveNotifInterval(min: Int = 10) {
         viewModelScope.launch {
             dataStoreRepo.setNotifInterval(min)
@@ -43,11 +40,15 @@ class MainViewModel @Inject constructor(
     //-------------------------------- W O R K    M A N A G E R ----------------------------------//
 
     fun scheduleNotif() {
-        val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(15, TimeUnit.MINUTES)
-            .setInitialDelay(1, TimeUnit.MINUTES)
-            .addTag(NotifWorker.TAG)
-            .build()
-        workManager.enqueue(notifWorkRequest)
+        viewModelScope.launch {
+            dataStoreRepo.notifInterval.collect { interval ->
+                val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
+                    .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
+                    .addTag(NotifWorker.TAG)
+                    .build()
+                workManager.enqueue(notifWorkRequest)
+            }
+        }
     }
 
     fun scheduleOneTimeNotif() {

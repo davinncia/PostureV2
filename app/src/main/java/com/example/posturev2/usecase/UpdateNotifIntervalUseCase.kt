@@ -29,16 +29,17 @@ class UpdateNotifIntervalUseCase @Inject constructor(
             val interval = computeRecallsInterval(score)
             dataStoreRepo.updateWeeklyProgress(score)
             dataStoreRepo.setNotifInterval(interval)
+
+            // Set new notif
+            workManager.cancelAllWorkByTag(NotifWorker.TAG)
+
+            val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
+                .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
+                .addTag(NotifWorker.TAG)
+                .build()
+            workManager.enqueue(notifWorkRequest)
         }
 
-        // Set new notif
-        workManager.cancelAllWorkByTag(NotifWorker.TAG)
-
-        val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(15, TimeUnit.MINUTES)
-            .setInitialDelay(1, TimeUnit.MINUTES)
-            .addTag(NotifWorker.TAG)
-            .build()
-        workManager.enqueue(notifWorkRequest)
     }
 
     private suspend fun computeWeekPercent(): Int {

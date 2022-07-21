@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdminViewModel @Inject constructor(
-    private val feedbackRepo: FeedbackRepository
+    feedbackRepo: FeedbackRepository
 ) : ViewModel() {
 
     val message = feedbackRepo.feedbacks.map { feedbacks ->
