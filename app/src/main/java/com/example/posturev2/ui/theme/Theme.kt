@@ -5,17 +5,21 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = BlueDarker,
-    secondary = PinkLight
-)
+    primary = Color.Black,
+    primaryVariant = BlackBluer,
+    secondary = Red,
+    onPrimary = Color.White
+    )
 
 private val LightColorPalette = lightColors(
     primary = BlueLight,
     primaryVariant = BlueDarker,
-    secondary = PinkLight
+    secondary = Red,
+    onPrimary = Color.Black
 
     /* Other default colors to override
     background = Color.White,
@@ -34,6 +38,10 @@ fun PostureV2Theme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
     } else {
         LightColorPalette
     }
+
+    val systemUiController = rememberSystemUiController()
+    if (darkTheme) systemUiController.setSystemBarsColor(color = Color.Black)
+    else systemUiController.setSystemBarsColor(color = BlueLight)
 
     MaterialTheme(
         colors = colors,

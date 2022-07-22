@@ -9,19 +9,13 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.android.style.LetterSpacingSpanEm
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -30,20 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
-import androidx.work.await
 import com.example.posturev2.admin.AdminActivity
-import com.example.posturev2.notif.NotifWorker
-import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.ui.theme.PostureV2Theme
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 //todo icon <v24
 //todo handle phone turned off
@@ -63,10 +48,9 @@ class MainActivity : ComponentActivity() {
                         }
                     ) },
                 ) {
-                    // A surface container using the 'background' color from the theme
                     Surface(
                         modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colors.background,
+                        color = MaterialTheme.colors.primary,
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -128,19 +112,18 @@ private fun IntervalTime(intervalStr: State<String>) {
 }
 
 @Composable
-fun NotifSwitch(checked: Boolean = false, onSwitch: (Boolean) -> Unit = {}) {
-    val checkedState = remember { mutableStateOf(checked) }
+fun NotifSwitch(checked: State<Boolean> = mutableStateOf(false), onSwitch: (Boolean) -> Unit = {}) {
+
     Switch(
-        checked = checkedState.value,
+        checked = checked.value,
         onCheckedChange = {
             onSwitch.invoke(it)
-            checkedState.value = it
         },
         colors = SwitchDefaults.colors(
             checkedThumbColor = Color.DarkGray,
             uncheckedThumbColor = Color.DarkGray,
-            checkedTrackColor = Color.Blue,
-            uncheckedTrackColor = Color.Gray,
+            checkedTrackColor = Color.Gray,
+            uncheckedTrackColor = Color.White
         ),
         modifier = Modifier.padding(Dp(16f))
     )
@@ -151,7 +134,8 @@ fun NotifSwitch(checked: Boolean = false, onSwitch: (Boolean) -> Unit = {}) {
 fun NotifButton(onClick: () -> Unit = {}) {
     Button(
         onClick = onClick,
-        Modifier.padding(Dp(16f))
+        Modifier.padding(Dp(16f)),
+        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primaryVariant)
     ) {
         Text("Send notification")
     }

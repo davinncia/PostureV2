@@ -80,6 +80,7 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
                 getBroadcastPendingIntent(false, NEG_RC)
             )
             .setPriority(NotificationCompat.PRIORITY_MAX)
+            .extend(NotificationCompat.WearableExtender())
 
         notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
@@ -125,17 +126,5 @@ class PostureNotifManager @Inject constructor(@ApplicationContext val appContext
         private const val NEU_RC = 2
         const val EXTRA_FEEDBACK = "feedback_response"
         const val ID_NOTIF = "posture_id"
-
-        private var INSTANCE: PostureNotifManager? = null
-        fun getInstance(appContext: Context): PostureNotifManager {
-            if (INSTANCE == null) {
-                synchronized(PostureNotifManager) {
-                    if (INSTANCE == null) {
-                        INSTANCE = PostureNotifManager(appContext)
-                    }
-                }
-            }
-            return INSTANCE!!
-        }
     }
 }
