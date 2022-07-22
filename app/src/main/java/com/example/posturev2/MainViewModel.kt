@@ -2,17 +2,12 @@ package com.example.posturev2
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
+import androidx.work.*
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.notif.PostureNotifManager
 import com.example.posturev2.repo.DataStoreRepository
-import com.example.posturev2.repo.FeedbackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -24,11 +19,18 @@ class MainViewModel @Inject constructor(
     private val dataStoreRepo: DataStoreRepository
 ) : ViewModel() {
 
+    private val _isNotifScheduled = MutableStateFlow<Boolean>(false)
+    val isNotifScheduled: StateFlow<Boolean> = _isNotifScheduled
+
     val interval = dataStoreRepo.notifInterval.map {
         "Reminder every $it min"
     }
     val score = dataStoreRepo.weeklyScore.map {
         "$it %"
+    }
+
+    init {
+        checkNotifIsScheduled()
     }
 
     fun saveNotifInterval(min: Int = 10) {
@@ -40,6 +42,8 @@ class MainViewModel @Inject constructor(
     //-------------------------------- W O R K    M A N A G E R ----------------------------------//
 
     fun scheduleNotif() {
+        cancelNotif()
+
         viewModelScope.launch {
             dataStoreRepo.notifInterval.collect { interval ->
                 val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
@@ -49,6 +53,8 @@ class MainViewModel @Inject constructor(
                 workManager.enqueue(notifWorkRequest)
             }
         }
+
+        _isNotifScheduled.value = true
     }
 
     fun scheduleOneTimeNotif() {
@@ -58,10 +64,18 @@ class MainViewModel @Inject constructor(
 
     fun cancelNotif() {
         workManager.cancelAllWorkByTag(NotifWorker.TAG)
+        _isNotifScheduled.value = false
     }
 
-    fun getNotifWorkerState(): Boolean {
-        val info = workManager.getWorkInfosByTag(NotifWorker.TAG)
-        return !(info.isCancelled || info.isDone || info.get().isEmpty())
+    private fun checkNotifIsScheduled() {
+        viewModelScope.launch {
+            workManager.getWorkInfosByTag(NotifWorker.TAG).await().forEach {
+                if (it.state == WorkInfo.State.ENQUEUED) {
+                    _isNotifScheduled.emit(true)
+                    return@launch
+                }
+                _isNotifScheduled.emit(false)
+            }
+        }
     }
 }

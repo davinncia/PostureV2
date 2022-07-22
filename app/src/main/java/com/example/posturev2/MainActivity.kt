@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            NotifSwitch(viewModel.getNotifWorkerState()) { checked ->
+                            NotifSwitch(viewModel.isNotifScheduled.collectAsState()) { checked ->
                                 if (checked) viewModel.scheduleNotif()
                                 else viewModel.cancelNotif()
                             }
