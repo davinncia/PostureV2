@@ -1,8 +1,6 @@
 package com.example.posturev2.usecase
 
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
+import androidx.work.*
 import com.example.posturev2.database.Feedback
 import com.example.posturev2.notif.NotifWorker
 import com.example.posturev2.repo.DataStoreRepository
@@ -33,11 +31,11 @@ class UpdateNotifIntervalUseCase @Inject constructor(
             // Set new notif
             workManager.cancelAllWorkByTag(NotifWorker.TAG)
 
-            val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
+            val notifWorkRequest: PeriodicWorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
                 .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
                 .addTag(NotifWorker.TAG)
                 .build()
-            workManager.enqueue(notifWorkRequest)
+            workManager.enqueueUniquePeriodicWork(NotifWorker.TAG, ExistingPeriodicWorkPolicy.REPLACE, notifWorkRequest)
         }
 
     }

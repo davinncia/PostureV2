@@ -46,11 +46,11 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             dataStoreRepo.notifInterval.collect { interval ->
-                val notifWorkRequest: WorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
+                val notifWorkRequest: PeriodicWorkRequest = PeriodicWorkRequestBuilder<NotifWorker>(interval.toLong(), TimeUnit.MINUTES)
                     .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
                     .addTag(NotifWorker.TAG)
                     .build()
-                workManager.enqueue(notifWorkRequest)
+                workManager.enqueueUniquePeriodicWork(NotifWorker.TAG, ExistingPeriodicWorkPolicy.REPLACE, notifWorkRequest)
             }
         }
 
