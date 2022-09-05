@@ -23,7 +23,7 @@ class UpdateNotifIntervalUseCase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             feedbackRepo.insert(Feedback(System.currentTimeMillis(), feedback))
 
-            val score = computeWeekPercent()
+            val score = computeAveragePercent()
             val interval = computeRecallsInterval(score)
             dataStoreRepo.updateWeeklyProgress(score)
             dataStoreRepo.setNotifInterval(interval)
@@ -46,6 +46,18 @@ class UpdateNotifIntervalUseCase @Inject constructor(
         val lastWeek = System.currentTimeMillis() - (1_000 * 60 * 60 * 24 * 7)
 
         feedbackRepo.getFeedbacks(fromTime = lastWeek).forEach {
+            count++
+            if (it.isStraight) score++
+        }
+
+        return if(count == 0) 0 else ((score / count.toDouble()) * 100).roundToInt()
+    }
+
+    private suspend fun computeAveragePercent(): Int {
+        var score = 0
+        var count = 0
+
+        feedbackRepo.getLastFeedbacks(count = 50).forEach {
             count++
             if (it.isStraight) score++
         }

@@ -48,27 +48,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ) },
                 ) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colors.primary,
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            NotifSwitch(viewModel.isNotifScheduled.collectAsState()) { checked ->
-                                if (checked) viewModel.scheduleNotif()
-                                else viewModel.cancelNotif()
-                            }
-                            NotifButton() {
-                                viewModel.scheduleOneTimeNotif()
-                                //viewModel.saveNotifInterval()
-                            }
-                        }
-                        Score(viewModel.score.collectAsState(initial = ""))
-                        IntervalTime(intervalStr = viewModel.interval.collectAsState(initial = ""))
-                    }
-
+                    Screen(viewModel = viewModel)
                 }
             }
 
@@ -84,8 +64,31 @@ class MainActivity : ComponentActivity() {
             
         }
     }
+}
 
-
+@Composable
+private fun Screen(viewModel: MainViewModel) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colors.primary,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            NotifSwitch(viewModel.isNotifScheduled.collectAsState()) { checked ->
+                if (checked) viewModel.scheduleNotif()
+                else viewModel.cancelNotif()
+            }
+            if (BuildConfig.DEBUG) {
+                NotifButton() {
+                    viewModel.scheduleOneTimeNotif()
+                }
+            }
+        }
+        Score(viewModel.score.collectAsState(initial = ""))
+        IntervalTime(intervalStr = viewModel.interval.collectAsState(initial = ""))
+    }
 }
 
 @Composable
@@ -148,11 +151,13 @@ fun MainTabBar(adminClick: () -> Unit = {}) {
         title = { Text(text = stringResource(R.string.app_title)) },
         elevation = 0.dp,
         actions = {
-            IconButton(
-                onClick = { adminClick.invoke() },
-                modifier = Modifier.padding(12.dp)
-           ) {
-                Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
+            if (BuildConfig.DEBUG) {
+                IconButton(
+                    onClick = { adminClick.invoke() },
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
+                }
             }
         }
     )

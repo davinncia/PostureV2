@@ -14,6 +14,9 @@ interface FeedbackDao {
     @Query("Select * FROM feedback WHERE timeStamp > :fromTime")
     suspend fun getFeedbacks(fromTime: Long): List<Feedback>
 
+    @Query("Select * FROM feedback ORDER BY timeStamp DESC LIMIT :count")
+    suspend fun getLastFeedback(count: Int): List<Feedback>
+
     @Insert
     suspend fun insertFeedback(feedback: Feedback)
 

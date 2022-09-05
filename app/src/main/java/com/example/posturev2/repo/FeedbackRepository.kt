@@ -15,4 +15,6 @@ class FeedbackRepository @Inject constructor(private val feedbackDao: FeedbackDa
     }
 
     suspend fun getFeedbacks(fromTime: Long) = feedbackDao.getFeedbacks(fromTime)
+
+    suspend fun getLastFeedbacks(count: Int = 1) = feedbackDao.getLastFeedback(count)
 }
