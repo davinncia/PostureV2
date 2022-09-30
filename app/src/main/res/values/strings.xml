@@ -5,4 +5,6 @@
     <string name="notif_action_negative">NO</string>
     <string name="app_title">Posture</string>
     <string name="notif_description">Notification to ask about current posture</string>
+    <string name="settings">Settings</string>
+    <string name="hour_short">h</string>
 </resources>

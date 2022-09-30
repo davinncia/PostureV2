@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PostureV2">
         <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".admin.AdminActivity"
             android:exported="false" />
         <activity

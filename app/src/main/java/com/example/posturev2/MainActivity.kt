@@ -9,10 +9,13 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -25,6 +28,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.posturev2.admin.AdminActivity
+import com.example.posturev2.settings.SettingsActivity
 import com.example.posturev2.ui.theme.PostureV2Theme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -147,16 +151,28 @@ fun NotifButton(onClick: () -> Unit = {}) {
 @Preview
 @Composable
 fun MainTabBar(adminClick: () -> Unit = {}) {
+
+    val context = LocalContext.current
+
     TopAppBar(
         title = { Text(text = stringResource(R.string.app_title)) },
         elevation = 0.dp,
         actions = {
-            if (BuildConfig.DEBUG) {
+            Row(modifier = Modifier.padding(12.dp)) {
+                if (BuildConfig.DEBUG) {
+                    IconButton(
+                        onClick = { adminClick.invoke() }
+                    ) {
+                        Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
+                    }
+                }
+
                 IconButton(
-                    onClick = { adminClick.invoke() },
-                    modifier = Modifier.padding(12.dp)
+                    onClick = {
+                        context.startActivity(SettingsActivity.newIntent(context))
+                    }
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_admin), contentDescription = "")
+                    Icon(imageVector = Icons.Default.Settings, contentDescription = "")
                 }
             }
         }
